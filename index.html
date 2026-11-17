@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090d18">
+<title>AI Video Studio</title>
+<style>
+:root{
+  --bg:#090d18;--panel:#111827;--panel2:#172033;
+  --line:#263249;--text:#f4f7ff;--muted:#9ba9bf;
+  --accent:#8b5cf6;--accent2:#06b6d4;--green:#22c55e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(circle at 80% 0,#20204a 0,transparent 35%),var(--bg);
+  color:var(--text);font-family:system-ui,-apple-system,Arial,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1200px;margin:auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 22px}
+.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:800}
+.logo{
+ width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));font-size:22px;
+}
+.pill{font-size:12px;color:#b7f7d0;background:#123425;padding:7px 11px;border-radius:30px}
+.hero{padding:25px 0 22px}
+.eyebrow{color:#b7a1ff;font-size:12px;font-weight:800;letter-spacing:2px}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.12;margin:12px 0}
+.gradient{background:linear-gradient(90deg,#b49aff,#55d8ed);color:transparent;background-clip:text}
+.hero p{color:var(--muted);max-width:650px;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.panel{
+ background:linear-gradient(145deg,rgba(24,34,55,.97),rgba(15,23,40,.97));
+ border:1px solid var(--line);border-radius:19px;padding:19px;min-width:0;
+}
+.main{grid-column:span 8}
+.side{grid-column:span 4}
+.full{grid-column:1/-1}
+h2{font-size:18px;margin:0 0 16px}
+h3{font-size:15px;margin:0 0 10px}
+label{display:block;color:#cbd5e1;font-size:13px;margin:13px 0 7px}
+input,select,textarea{
+ width:100%;border:1px solid #34425b;border-radius:11px;padding:12px;
+ color:var(--text);background:#0b1220;outline:none;
+}
+textarea{min-height:110px;resize:vertical;line-height:1.6}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.mode{
+ border:1px solid var(--line);border-radius:13px;padding:13px;
+ background:#0c1424;color:var(--text);text-align:left;
+}
+.mode.active{border-color:var(--accent);background:#241b43}
+.mode strong{display:block;margin-bottom:4px}
+.mode small{color:var(--muted)}
+.primary{
+ border:0;border-radius:12px;padding:13px 18px;color:white;font-weight:800;
+ background:linear-gradient(100deg,#7c3aed,#2563eb);width:100%;margin-top:16px;
+}
+.primary:disabled{opacity:.55;cursor:wait}
+.secondary{
+ border:1px solid #40506d;background:#172238;color:white;
+ border-radius:10px;padding:10px 13px;
+}
+.note{color:var(--muted);font-size:12px;line-height:1.6}
+.status{font-size:13px;color:#a5f3fc;margin-top:12px;min-height:20px}
+.result{
+ white-space:pre-wrap;line-height:1.7;background:#0a1120;border:1px solid var(--line);
+ padding:15px;border-radius:12px;min-height:130px;color:#e6edfa;overflow-wrap:anywhere;
+}
+.hidden{display:none!important}
+.upload{
+ border:1px dashed #53617b;padding:18px;text-align:center;border-radius:13px;
+ color:var(--muted);margin-top:10px;
+}
+.upload img{max-width:100%;max-height:190px;border-radius:10px;margin-top:12px}
+.scene{
+ background:#0a1221;border:1px solid var(--line);border-radius:12px;
+ padding:13px;margin:9px 0;color:#dbe6f7;font-size:13px;line-height:1.6;
+}
+.scene b{color:#c4b5fd}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.actions button{flex:1}
+.feature{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.feature:last-child{border:0}
+.feature-icon{font-size:22px}
+.feature small{display:block;color:var(--muted);margin-top:4px;line-height:1.5}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:28px 0}
+#videoNotice{color:#fcd34d}
+@media(max-width:760px){
+ .main,.side{grid-column:1/-1}
+ .app{padding:13px}
+ .panel{padding:15px}
+ header{padding-bottom:10px}
+}
+@media(max-width:420px){.two{grid-template-columns:1fr}.brand{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">✦</div> AI Video Studio</div>
+  <div class="pill">FREE-FIRST STUDIO</div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">CREATE • IMAGINE • GENERATE</div>
+  <h1>अपना अगला वीडियो <span class="gradient">बनाइए</span></h1>
+  <p>अपना आइडिया लिखें, स्क्रिप्ट तैयार करें और वीडियो बनाने की तैयारी शुरू करें। Hindi, English और Hinglish सपोर्ट।</p>
+</section>
+
+<div class="grid">
+<section class="panel main">
+  <h2>🎬 नया वीडियो प्रोजेक्ट</h2>
+  <div class="modes">
+    <button class="mode active" id="textMode" type="button">
+      <strong>✍️ Text to Video</strong><small>लिखकर वीडियो की योजना बनाएँ</small>
+    </button>
+    <button class="mode" id="imageMode" type="button">
+      <strong>🖼️ Image to Video</strong><small>तस्वीर से वीडियो की योजना बनाएँ</small>
+    </button>
+  </div>
+
+  <label for="topic">वीडियो का विषय / Prompt</label>
+  <textarea id="topic" placeholder="उदाहरण: भारत के अंतरिक्ष मिशन पर एक शानदार cinematic वीडियो बनाओ..."></textarea>
+
+  <div id="imageUpload" class="upload hidden">
+    <label for="imageFile">अपनी तस्वीर चुनें</label>
+    <input id="imageFile" type="file" accept="image/*">
+    <img id="imagePreview" class="hidden" alt="Selected image preview">
+    <p class="note">तस्वीर केवल इस पेज पर preview होगी। अभी GPU वीडियो इंजन से नहीं जुड़ी है।</p>
+  </div>
+
+  <div class="two">
+    <div>
+      <label for="language">वीडियो भाषा</label>
+      <select id="language">
+        <option value="Hindi">Hindi</option>
+        <option value="English">English</option>
+        <option value="Hinglish">Hinglish</option>
+      </select>
+    </div>
+    <div>
+      <label for="format">वीडियो फॉर्मेट</label>
+      <select id="format">
+        <option value="Shorts (9:16)">YouTube Shorts (9:16)</option>
+        <option value="Landscape (16:9)">Long Video (16:9)</option>
+        <option value="Square (1:1)">Square (1:1)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <label for="duration">वीडियो अवधि</label>
+      <select id="duration">
+        <option value="30 seconds">30 सेकंड</option>
+        <option value="60 seconds">1 मिनट</option>
+        <option value="3 minutes">3 मिनट</option>
+        <option value="5 minutes">5 मिनट</option>
+        <option value="10 minutes">10 मिनट</option>
+        <option value="15 minutes">15 मिनट</option>
+        <option value="20 minutes">20 मिनट</option>
+      </select>
+    </div>
+    <div>
+      <label for="style">वीडियो स्टाइल</label>
+      <select id="style">
+        <option value="Cinematic realistic">Cinematic Realistic</option>
+        <option value="3D Animation">3D Animation</option>
+        <option value="Cartoon">Cartoon</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Documentary">Documentary</option>
+        <option value="News style">News Style</option>
+        <option value="Motivational">Motivational</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="voice">Voice Style</label>
+  <select id="voice">
+    <option value="Natural male voice">Natural Male Voice</option>
+    <option value="Natural female voice">Natural Female Voice</option>
+    <option value="Energetic narration">Energetic Narration</option>
+    <option value="Calm narration">Calm Narration</option>
+  </select>
+
+  <button class="primary" id="generateScript">✨ AI Script Generate करें</button>
+  <div class="status" id="status" role="status"></div>
+  <p class="note">स्क्रिप्ट बनाने के लिए हमारे सुरक्षित Worker backend का उपयोग होगा। कोई API key इस HTML में नहीं है।</p>
+</section>
+
+<aside class="panel side">
+  <h2>⚡ Studio Tools</h2>
+  <div class="feature"><div class="feature-icon">📝</div><div><b>AI Script Generator</b><small>विषय से वीडियो स्क्रिप्ट तैयार करें।</small></div></div>
+  <div class="feature"><div class="feature-icon">🎙️</div><div><b>Voice Preview</b><small>ब्राउज़र की उपलब्ध आवाज से स्क्रिप्ट सुनें।</small></div></div>
+  <div class="feature"><div class="feature-icon">🎞️</div><div><b>Scene Planner</b><small>स्क्रिप्ट को छोटे दृश्यों में बाँटें।</small></div></div>
+  <div class="feature"><div class="feature-icon">📥</div><div><b>Script Download</b><small>अपनी स्क्रिप्ट TXT फाइल में सेव करें।</small></div></div>
+  <hr style="border-color:#263249;margin:18px 0">
+  <h3>Video Engine</h3>
+  <p class="note" id="videoNotice">GPU इंजन अभी कनेक्ट नहीं है। असली MP4 जनरेशन अगले चरण में जोड़ा जाएगा।</p>
+  <button class="secondary" id="videoButton" style="width:100%" type="button">वीडियो इंजन की स्थिति</button>
+</aside>
+
+<section class="panel full">
+  <h2>📜 आपकी AI Script</h2>
+  <div id="scriptOutput" class="result">आपकी तैयार स्क्रिप्ट यहाँ दिखाई देगी। ऊपर विषय लिखकर AI Script Generate करें।</div>
+  <div class="actions">
+    <button class="secondary" id="copyScript" type="button">📋 Copy Script</button>
+    <button class="secondary" id="downloadScript" type="button">⬇️ Download TXT</button>
+    <button class="secondary" id="speakScript" type="button">🔊 Voice Preview</button>
+  </div>
+</section>
+
+<section class="panel full">
+  <h2>🎥 Scene Planner</h2>
+  <p class="note">यह स्क्रिप्ट के आधार पर शुरुआती scene breakdown तैयार करता है। यह अभी AI video clips नहीं बनाता।</p>
+  <div id="scenes"><p class="note">स्क्रिप्ट बनने के बाद यहाँ scenes दिखाई देंगे।</p></div>
+</section>
+</div>
+
+<footer>AI Video Studio · Free-first · Built for creators</footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+// Public endpoint only. Never put secret API keys in this file.
+const API_URL = "https://free-ai-video-maker.vyhijay.workers.dev/api/script";
+
+const $ = id => document.getElementById(id);
+let mode = "text";
+let currentScript = "";
+
+function setStatus(message, isError=false) {
+  $("status").textContent = message;
+  $("status").style.color = isError ? "#fca5a5" : "#a5f3fc";
+}
+
+$("textMode").addEventListener("click", () => {
+  mode = "text";
+  $("textMode").classList.add("active");
+  $("imageMode").classList.remove("active");
+  $("imageUpload").classList.add("hidden");
+});
+
+$("imageMode").addEventListener("click", () => {
+  mode = "image";
+  $("imageMode").classList.add("active");
+  $("textMode").classList.remove("active");
+  $("imageUpload").classList.remove("hidden");
+});
+
+$("imageFile").addEventListener("change", event => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    setStatus("कृपया image file चुनें।", true);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    $("imagePreview").src = reader.result;
+    $("imagePreview").classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+});
+
+function extractScript(data) {
+  if (typeof data === "string") return data;
+  if (!data || typeof data !== "object") return "";
+  return data.script || data.content || data.text ||
+    data.result || data.output || data.generated_script || "";
+}
+
+function makeScenes(script) {
+  const parts = script
+    .split(/\n+|(?<=[.!?।])\s+/)
+    .map(x => x.trim())
+    .filter(x => x.length > 18)
+    .slice(0, 12);
+
+  $("scenes").innerHTML = "";
+  if (!parts.length) {
+    $("scenes").textContent = "स्क्रिप्ट से scenes नहीं बन पाए।";
+    return;
+  }
+
+  parts.forEach((part, index) => {
+    const card = document.createElement("div");
+    card.className = "scene";
+    const heading = document.createElement("b");
+    heading.textContent = "Scene " + (index + 1);
+    const body = document.createElement("div");
+    body.textContent = part;
+    card.append(heading, body);
+    $("scenes").appendChild(card);
+  });
+}
+
+async function generateScript() {
+  const topic = $("topic").value.trim();
+  if (!topic) {
+    setStatus("पहले वीडियो का विषय लिखें।", true);
+    $("topic").focus();
+    return;
+  }
+
+  const button = $("generateScript");
+  button.disabled = true;
+  button.textContent = "⏳ स्क्रिप्ट तैयार हो रही है...";
+  setStatus("Backend से संपर्क किया जा रहा है...");
+
+  const payload = {
+    topic,
+    prompt: topic,
+    language: $("language").value,
+    duration: $("duration").value,
+    style: $("style").value,
+    voice: $("voice").value,
+    format: $("format").value,
+    video_type: mode === "image" ? "image-to-video" : "text-to-video"
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    const raw = await response.text();
+    let data;
+    try { data = JSON.parse(raw); }
+    catch { data = {text:raw}; }
+
+    if (!response.ok) {
+      const message = data.error || data.message || raw || "Server error";
+      throw new Error("HTTP " + response.status + ": " + message);
+    }
+
+    const result = extractScript(data);
+    if (!result) {
+      throw new Error("Server से response मिला, लेकिन script field नहीं मिली। Worker response जाँचना होगा।");
+    }
+
+    currentScript = result;
+    $("scriptOutput").textContent = result;
+    makeScenes(result);
+    setStatus("✅ आपकी स्क्रिप्ट तैयार है!");
+  } catch (error) {
+    console.error(error);
+    setStatus("स्क्रिप्ट नहीं बन पाई: " + error.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ AI Script Generate करें";
+  }
+}
+
+$("generateScript").addEventListener("click", generateScript);
+
+$("copyScript").addEventListener("click", async () => {
+  if (!currentScript) return setStatus("पहले स्क्रिप्ट तैयार करें।", true);
+  try {
+    await navigator.clipboard.writeText(currentScript);
+    setStatus("स्क्रिप्ट कॉपी हो गई।");
+  } catch {
+    setStatus("Copy उपलब्ध नहीं है। स्क्रिप्ट को दबाकर चुनें।", true);
+  }
+});
+
+$("downloadScript").addEventListener("click", () => {
+  if (!currentScript) return setStatus("पहले स्क्रिप्ट तैयार करें।", true);
+  const blob = new Blob([currentScript], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "AI-Video-Studio-Script.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus("Script TXT डाउनलोड शुरू हुआ।");
+});
+
+$("speakScript").addEventListener("click", () => {
+  if (!currentScript) return setStatus("पहले स्क्रिप्ट तैयार करें।", true);
+  if (!("speechSynthesis" in window)) {
+    return setStatus("इस ब्राउज़र में Voice Preview उपलब्ध नहीं है।", true);
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(currentScript);
+  const language = $("language").value;
+  utterance.lang = language === "English" ? "en-IN" : "hi-IN";
+  utterance.rate = 0.95;
+  window.speechSynthesis.speak(utterance);
+  setStatus("ब्राउज़र Voice Preview शुरू हुआ।");
+});
+
+$("videoButton").addEventListener("click", () => {
+  alert("अभी GPU Video Engine वेबसाइट से कनेक्ट नहीं है। पहले ComfyUI/LTX GPU backend जोड़ना बाकी है।");
+});
+})();
+</script>
+</body>
+                                                                                                                                 </html>
+                                                                                                                                 
