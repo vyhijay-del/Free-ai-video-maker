@@ -43,6 +43,124 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Generate a structured video script
+app.post("/api/script", (req, res) => {
+  try {
+    const {
+      topic,
+      prompt,
+      language = "Hindi",
+      duration = "60 seconds",
+      style = "Cinematic realistic",
+      voice = "Natural male voice",
+      format = "Shorts (9:16)"
+    } = req.body || {};
+
+    const subject = String(topic || prompt || "").trim();
+
+    if (!subject || subject.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        error: "A valid video topic is required."
+      });
+    }
+
+    let script;
+
+    if (language === "English") {
+      script = `TITLE: ${subject}
+
+VIDEO STYLE: ${style}
+FORMAT: ${format}
+DURATION: ${duration}
+VOICE: ${voice}
+
+INTRO:
+Welcome! Today, we are exploring ${subject}.
+
+SCENE 1 - INTRODUCTION:
+Introduce the topic with an engaging opening visual.
+
+SCENE 2 - MAIN STORY:
+Explain the important details about ${subject}.
+Use relevant visuals and clear narration.
+
+SCENE 3 - KEY MOMENT:
+Show the most interesting aspect of the topic.
+
+SCENE 4 - CONCLUSION:
+Summarize the main message and leave viewers with a memorable thought.
+
+OUTRO:
+If you enjoyed this video, like, share and subscribe!`;
+
+    } else if (language === "Hinglish") {
+      script = `TITLE: ${subject}
+
+STYLE: ${style}
+FORMAT: ${format}
+DURATION: ${duration}
+VOICE: ${voice}
+
+INTRO:
+Hello dosto! Aaj hum baat karenge ${subject} ke baare mein.
+
+SCENE 1:
+Is topic ka interesting introduction dijiye.
+
+SCENE 2:
+Ab jaante hain ${subject} ki important details.
+
+SCENE 3:
+Iska sabse interesting aur important part dekhiye.
+
+SCENE 4:
+Toh dosto, aaj humne ${subject} ke baare mein jaana.
+
+OUTRO:
+Video pasand aaye toh Like, Share aur Subscribe zaroor karein!`;
+
+    } else {
+      script = `शीर्षक: ${subject}
+
+स्टाइल: ${style}
+फॉर्मेट: ${format}
+अवधि: ${duration}
+आवाज़: ${voice}
+
+INTRO:
+नमस्कार दोस्तों! आज हम जानेंगे ${subject} के बारे में।
+
+सीन 1 - शुरुआत:
+एक आकर्षक दृश्य के साथ विषय का परिचय दें।
+
+सीन 2 - मुख्य जानकारी:
+${subject} से जुड़ी महत्वपूर्ण जानकारी आसान भाषा में बताएं।
+
+सीन 3 - खास जानकारी:
+विषय के सबसे रोचक पहलू को दिखाएं और समझाएं।
+
+सीन 4 - निष्कर्ष:
+पूरी जानकारी का सार बताएं और दर्शकों को एक यादगार संदेश दें।
+
+OUTRO:
+अगर वीडियो पसंद आया हो तो लाइक, शेयर और चैनल को सब्सक्राइब जरूर करें!`;
+    }
+
+    return res.json({
+      success: true,
+      script,
+      type: "template-based"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Could not generate script."
+    });
+  }
+});
+
 // Create a video generation task
 app.post("/api/video", async (req, res) => {
   try {
