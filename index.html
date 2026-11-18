@@ -402,9 +402,67 @@ $("speakScript").addEventListener("click", () => {
   setStatus("ब्राउज़र Voice Preview शुरू हुआ।");
 });
 
-$("videoButton").addEventListener("click", () => {
-  alert("अभी GPU Video Engine वेबसाइट से कनेक्ट नहीं है। पहले ComfyUI/LTX GPU backend जोड़ना बाकी है।");
+$("videoButton").addEventListener("click", async () => {
+  const prompt = $("topic").value.trim();
+
+  if (!prompt) {
+    setStatus("पहले वीडियो का विषय लिखें।", true);
+    $("topic").focus();
+    return;
+  }
+
+  if (mode === "image") {
+    setStatus("अभी केवल Text-to-Video उपलब्ध है।", true);
+    return;
+  }
+
+  const button = $("videoButton");
+  button.disabled = true;
+  button.textContent = "⏳ वीडियो request भेज रहे हैं...";
+
+  setStatus("Render Backend से संपर्क हो रहा है...");
+
+  const aspectRatio =
+    $("format").value.startsWith("Shorts") ? "9:16" :
+    $("format").value.startsWith("Square") ? "1:1" :
+    "16:9";
+
+  const videoPrompt =
+    prompt + ". Visual style: " + $("style").value;
+
+  try {
+    const response = await fetch(VIDEO_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt: videoPrompt,
+        seconds: "8",
+        aspect_ratio: aspectRatio
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Video request failed");
+    }
+
+    $("videoNotice").textContent =
+      "Video task submitted. ID: " + data.video_id;
+
+    setStatus("✅ वीडियो request स्वीकार हुई। Task ID: " + data.video_id);
+
+  } catch (error) {
+    console.error(error);
+    setStatus("वीडियो request असफल: " + error.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = "वीडियो जनरेशन शुरू करें";
+  }
 });
+
 })();
 </script>
 </body>
